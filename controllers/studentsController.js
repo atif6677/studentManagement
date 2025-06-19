@@ -1,79 +1,103 @@
 const db = require('../utils/dbConnection');
+const Students = require('../models/student');
 
+ const   addStudent = async(req, res) => {
 
-const addStudent = (req, res) => {
-  const {id, name, email, age } = req.body;
+  try {
+    const {id, name, email, age } = req.body;
+    const student = await Students.create({
+      id:id,
+      name:name,
+      email:email,
+      age:age
+    });
 
-  const query = 'INSERT INTO students (id, name, email, age) VALUES (?, ?, ?, ?)';
-  db.execute(query, [id, name, email, age], (err, results) => {
-    if (err) {
-      console.error('Error adding student:', err);
-      return res.status(500).json({ error: 'Failed to add student' });
-    }
-    res.status(201).json({ message: 'Student added successfully', studentId: results.insertId });
-  });
+    res.status(201).json({ message: 'Student added successfully', student });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add student' });
+  }
+  
+
 }
 
 
-const getStudents = (req, res) => {
-  const query = 'SELECT * FROM students';
-  db.execute(query, (err, results) => {
-    if (err) {
-      console.error('Error fetching students:', err);
-      return res.status(500).json({ error: 'Failed to fetch students' });
-    }
-    res.status(200).json(results);
-  });
-}
+const getStudents = async (req, res) => {
+  try {
+    const students = await Students.findAll(); 
+    res.status(200).json(students);
+  } catch (error) {
+    console.error('Error fetching students:', error);
+    res.status(500).json({ error: 'Failed to fetch students' });
+  }
+};
 
-const getStudentById = (req, res) => {
+const getStudentById = async (req, res) => {
   const studentId = req.params.id;
-  const query = 'SELECT * FROM students WHERE id = ?';
-  db.execute(query, [studentId], (err, results) => {
-    if (err) {
-      console.error('Error fetching student:', err);
-      return res.status(500).json({ error: 'Failed to fetch student' });
-    }
-    if (results.length === 0) {
+
+  try {
+    const student = await Students.findByPk(studentId); 
+
+    if (!student) {
       return res.status(404).json({ error: 'Student not found' });
     }
-    res.status(200).json(results[0]);
-  });
+
+    res.status(200).json(student);
+  } catch (error) {
+    console.error('Error fetching student:', error);
+    res.status(500).json({ error: 'Failed to fetch student' });
+  }
+};
+
+
+
+const updateStudent = async(req,res)=>{
+
+
+  try {
+    const studentId = req.params.id;
+     const {id,name,email,age }= req.body
+
+const student = await Students.findByPk(studentId);
+if (!student) {
+  res.status(404).json({ error: 'Student not found' });
+  return;
+  } 
+  student.name = name;
+  student.email = email;  
+  student.age = age;
+
+  res.status(200).json({ message: 'Student updated successfully' });
+}
+
+  catch (error) {
+    res.status(500).json({ error: 'Failed to update student' });
+    
+  }  
 }
 
 
-const updateStudent = (req,res)=>{
+const deleteStudent = async (req, res) => {
+  
+  try {
+     const studentId = req.params.id;
+    const student = await Students.destroy({
 
-const studentId = req.params.id;
-const {id,name,email,age }= req.body
-const query ='update students set id=?, name=?, email=?, age=? where id=?';
+      where: { 
+        id:studentId 
+      }
+    
+    });
 
-  db.execute(query, [id, name, email, age, studentId], (err, results) => {
-    if (err) {
-      console.error('Error updating student:', err);
-      return res.status(500).json({ error: 'Failed to update student' });
-    }
-    if (results.affectedRows === 0) {
+    if (!student) {
       return res.status(404).json({ error: 'Student not found' });
     }
-    res.status(200).json({ message: 'Student updated successfully' });
-  });   
-}
-
-
-const deleteStudent = (req, res) => {
-  const studentId = req.params.id;
-  const query = 'DELETE FROM students WHERE id = ?';
-  db.execute(query, [studentId], (err, results) => {
-    if (err) {
-      console.error('Error deleting student:', err);
-      return res.status(500).json({ error: 'Failed to delete student' });
-    }
-    if (results.affectedRows === 0) {
-      return res.status(404).json({ error: 'Student not found' });
-    }
+    
     res.status(200).json({ message: 'Student deleted successfully' });
-  });
+    
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete student' });
+  }
+ 
 }
 
 

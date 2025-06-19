@@ -11,7 +11,7 @@ app.use('/students',studentsRoute);
 
 
 app.use("/",(req, res) => {
-  res.send("Student Management API");
+  res.send("Student Management API using Sequelize and MySQL");
 });
 
 
