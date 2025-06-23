@@ -3,14 +3,17 @@ const app = express();
 const port =3000;
 const db= require('./utils/dbConnection');
 const studentsRoute = require('./routes/studentsRoute');
-const studentsModel = require('./models/student');
+
+//models
+
+require('./models');
 
 app.use(express.json());
 
 app.use('/students',studentsRoute);
 
 
-app.use("/",(req, res) => {
+app.get("/",(req, res) => {
   res.send("Student Management API using Sequelize and MySQL");
 });
 
