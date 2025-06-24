@@ -79,7 +79,7 @@ const deleteStudent = async (req, res) => {
 
 const addingValuesToStudentAndIdentityTable = async (req,res) => {
   try {
-    // DO NOT include 'id' in req.body.student if it's auto-incrementing
+  
     const student = await Students.create(req.body.student);
 
     const idCard = await IdentityCard.create({ // Corrected to IdentityCard (capital 'I')
@@ -122,6 +122,8 @@ const addIdentityCardToStudent = async (req, res) => {
     res.status(500).json({ error: 'Failed to add identity card to student' });
   }
 };
+
+
 
 
 module.exports = {

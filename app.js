@@ -3,7 +3,7 @@ const app = express();
 const port =3000;
 const db= require('./utils/dbConnection');
 const studentsRoute = require('./routes/studentsRoute');
-
+const courses=require("./routes/coursesroute")
 //models
 
 require('./models');
@@ -11,7 +11,7 @@ require('./models');
 app.use(express.json());
 
 app.use('/students',studentsRoute);
-
+app.use('/courses',courses);
 
 app.get("/",(req, res) => {
   res.send("Student Management API using Sequelize and MySQL");
@@ -21,7 +21,7 @@ app.get("/",(req, res) => {
 
 
 
-db.sync({force:true})  .then(() => {
+db.sync()  .then(() => {
     app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
